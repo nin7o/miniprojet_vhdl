@@ -1,0 +1,7 @@
+SlaveOpL.vhd à ne pas modifier
+MasterOpl.vhd à compléter
+TestOpl.vhd à écrire
+n7.makefile à ne pas modifier a priori sauf si vous voulez allonger la durée de
+la simulation
+
+Ne surtout pas modifier le nom des fichiers ni celui des composants

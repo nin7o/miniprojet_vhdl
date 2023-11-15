@@ -1,0 +1,39 @@
+.SECONDARY:
+.PHONY: show_% clean all
+
+FLAGS=--ieee=synopsys # Compiler avec un ieee non standard
+
+# ====================================================================
+#              RAJOUTER ICI SI BESOIN
+
+# liste des fichiers a compiler par defaut
+all: additionneur_4_bits.test additionneur.test
+
+# Preciser les fichiers qui ont des dependances dans d'autres fichiers
+additionneur_4_bits.comp : additionneur.comp
+
+additionneur.comp: demi_additionneur.comp
+
+demi_additionneur.comp: porte_ou.comp
+
+# ====================================================================
+
+# Ne pas modifier ce qui suit
+# Compiler un fichier de test et l'afficher
+show_% : %.test
+	gtkwave test_$*.vcd
+
+# Compiler un fichier de test dont le nom doit correspondre a test_<…>.hdl
+%.test : %.comp test_%.comp
+	ghdl -e test_$*
+	ghdl -r $(FLAGS) test_$* --vcd=test_$*.vcd
+	touch $@
+
+# Compiler un fichier avec l'extension .hdl
+%.comp : %.vhd
+	ghdl -a $(FLAGS) $<
+	touch $@
+
+# Invalider les compilation precedentes
+clean :
+	rm *.comp *.test *.cf

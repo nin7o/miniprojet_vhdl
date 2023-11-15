@@ -1,0 +1,1 @@
+-- fichier à écraser avec le fichier généré par ISE (New Source)

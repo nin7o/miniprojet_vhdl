@@ -1,0 +1,18 @@
+Dans ce répertoire, il faut compléter le fichier "er_1octet.vhd" en développant
+son architecture.
+
+Un test simple est fourni avec des assertions, permettant de valider plus
+facilement. Il se peut qu'il y ait des décalages en fonctions de ce qui a été
+fait en TD de lancement du mini-projet.
+
+Un test un peu plus compliqué avec un automate pour donner les ordres d'échanges
+et attendre que les échanges soient terminés est aussi fourni.
+Il peut vous aider à concevoir le MasterOpl de la partie 2.
+
+Vous avez aussi les fichiers nécessaires pour simuler un composant avec le
+script n7xilinxhelper et visualiser les valeurs des signaux (fichier output.vcd,
+visualisation avec gtkwave sous linux).
+
+Nouveauté 2023
+--------------
+Un Makefile pour ghdl
