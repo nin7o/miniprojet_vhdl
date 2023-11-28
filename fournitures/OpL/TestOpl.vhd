@@ -2,10 +2,10 @@
 -- Company: 
 -- Engineer:
 --
--- Create Date:   10:51:48 11/16/2023
+-- Create Date:   12:24:31 11/20/2023
 -- Design Name:   
--- Module Name:   /home/mricard/Xilink/mini_projet/testMasterOpl.vhd
--- Project Name:  mini_projet
+-- Module Name:   /home/ngauthie2/Documents/2A/VHDL/miniprojet_vhdl/fournitures/OpL/TestOpl.vhd
+-- Project Name:  Projet
 -- Target Device:  
 -- Tool versions:  
 -- Description:   
@@ -32,10 +32,10 @@ USE ieee.std_logic_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 --USE ieee.numeric_std.ALL;
  
-ENTITY testMasterOpl IS
-END testMasterOpl;
+ENTITY TestOpl IS
+END TestOpl;
  
-ARCHITECTURE behavior OF testMasterOpl IS 
+ARCHITECTURE behavior OF TestOpl IS 
  
     -- Component Declaration for the Unit Under Test (UUT)
  
@@ -56,14 +56,16 @@ ARCHITECTURE behavior OF testMasterOpl IS
          busy : OUT  std_logic
         );
     END COMPONENT;
-    COMPONENT SlaveOpl
-	 PORT(
-		sclk : IN std_logic;
-		mosi : IN std_logic;
-		ss : IN std_logic;          
-		miso : OUT std_logic
-		);
-	 END COMPONENT;
+	 
+	 COMPONENT SlaveOpl
+		PORT(
+			sclk : IN std_logic;
+			mosi : IN std_logic;
+			ss : IN std_logic;          
+			miso : OUT std_logic
+			);
+		END COMPONENT;
+    
 
    --Inputs
    signal rst : std_logic := '0';
@@ -85,12 +87,12 @@ ARCHITECTURE behavior OF testMasterOpl IS
    -- Clock period definitions
    constant clk_period : time := 10 ns;
    constant sclk_period : time := 10 ns;
- 
-   -- signaux attendu pour la comparaison
-   signal ref_nand : std_logic_vector(7 downto 0);
-   signal ref_nor: std_logic_vector(7 downto 0);
-   signal ref_xor: std_logic_vector(7 downto 0);
-
+	
+	-- Signaux de référence
+	signal busy_ref : std_logic;
+	signal nand_ref : std_logic_vector(7 downto 0);
+	signal nor_ref : std_logic_vector(7 downto 0);
+	signal xor_ref : std_logic_vector(7 downto 0);
  
 BEGIN
  
@@ -116,7 +118,7 @@ BEGIN
 			mosi => mosi,
 			miso => miso,
 			ss => ss
-		);
+	);
 
    -- Clock process definitions
    clk_process :process
@@ -126,71 +128,66 @@ BEGIN
 		clk <= '1';
 		wait for clk_period/2;
    end process;
- 		
-	v1   <= "UUUUUUUU" after 0 ps,
-			  "01100001" after  200000 ps,
-           "10100101" after 1080000 ps,
-           "11111111" after 1960000 ps,
-			  "10100101" after 2840000 ps,
-			  "10010110" after 3720000 ps;
-
-				  
-	v2   <= "UUUUUUUU" after 0 ps,
-	        "01000100" after  200000 ps,
-           "11010010" after 1080000 ps,
-           "00000000" after 1960000 ps,
-			  "10010100" after 2840000 ps,
-			  "00111011" after 3720000 ps;
-
-   -- Idealément la simulation fait aux alentour de 6us
-	ref_nand <= "00110011" after 595000 ps,
-					"10111111" after 1475000 ps,
- 					"01111111" after 2355000 ps,
-					"11111111" after 3235000 ps,
-					"01111011" after 4115000 ps,
-					"11101101" after 4995000 ps;
-
-	ref_nor  <= "11001100" after 835000 ps,
-					"10011010" after 1715000 ps,
- 					"00001000" after 2595000 ps,
-					"00000000" after 3475000 ps,
-					"01001010" after 4355000 ps,
-					"01000000" after 5235000 ps;
-
-	ref_xor  <= "10100000" after 1075000 ps,
-				 	"00100101" after 1955000 ps,
- 					"01110111" after 2835000 ps,
-					"11111111" after 3715000 ps,
-					"00110001" after 4595000 ps,
-					"10101101" after 5475000 ps;
+	
+	v1 <= "UUUUUUUU" after 0 ps,
+			"11010011" after 100000 ps;
+	
+	v2 <= "UUUUUUUU" after 0 ps,
+			"10100100" after 100000 ps;
+			
+			
+	-- signaux de référence
+	
+	busy_ref <= '0' after 0 ps,
+					'1' after 105000 ps,
+					'0' after 975000 ps,
+					'1' after 985000 ps, 
+					'0' after 1855000 ps;
 					
+	nand_ref <= "UUUUUUUU" after 0 ps,
+					"00110011" after 495000 ps,
+					"01111111" after 1375000 ps;
+	
+	nor_ref <= "UUUUUUUU" after 0 ps,
+				  "11001100" after 735000 ps,
+				  "00001000" after 1615000 ps;
+	
+	xor_ref <= "UUUUUUUU" after 0 ps,
+				  "10100000" after 975000 ps,
+				  "01110111" after 1855000 ps;
 					
+
    -- Stimulus process
    stim_proc: process
    begin		
       -- hold reset state for 100 ns.
       wait for 100 ns;	
-		
-		
-      wait for clk_period*10;
 
+      -- insert stimulus here 
+		
+		-- on down le reset
 		rst <= '1';
+		
+		--on active le composant
 		en <= '1';
-		-- insert stimulus here 
 
-      wait;
+      wait for 1755 ns;
+		en <= '0';
+		wait for 1000000 ns;
    end process;
-
+	
 	process(clk)
-	-- permet de vérifier que les valeurs de nand, nor et xor sont les bonnes
-	begin
-    if(falling_edge(clk)) then
-      assert(val_nand = ref_nand) report "nand faux"
-      severity error;
-      assert(val_nor = ref_nor) report "nor faux"
-      severity error;
-      assert(val_xor = ref_xor) report "xor faux"
-      severity error;
-    end if;
-	end process;
+		begin
+			if(falling_edge(clk)) then
+				assert(val_nand = nand_ref) report "nand différent nand_ref"
+				severity error;
+				assert(val_nor = nor_ref) report "nor différent nor_ref"
+				severity error;
+				assert(val_xor = xor_ref) report "xor différent xor_ref"
+				severity error;
+				assert(busy = busy_ref) report "busy différent busy_ref"
+				severity error;
+			end if;
+		end process;
+
 END;
